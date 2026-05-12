@@ -1,1 +1,106 @@
+// GANTI DENGAN URL WEB APP DARI GOOGLE APPS SCRIPT ANDA
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyodjWxwn75cpiXUNqG_yuSJuPJBgkF857S7MzKhQbmsn-WjMv5VNydLzAqupsq63VwRQ/exec";
 
+document.addEventListener("DOMContentLoaded", () => {
+    // Tampilkan tanggal hari ini
+    document.getElementById("current-date").innerText = new Date().toLocaleDateString('id-ID', { 
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+    });
+
+    // Ambil data pertama kali
+    fetchData();
+
+    // Handle Form Submit
+    const form = document.getElementById("service-form");
+    form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        submitData();
+    });
+});
+
+// Fungsi mengambil data dari Spreadsheet
+async function fetchData() {
+    const motorList = document.getElementById("motor-list");
+    const loader = document.getElementById("loading");
+    
+    motorList.innerHTML = "";
+    loader.style.display = "block";
+
+    try {
+        const response = await fetch(SCRIPT_URL);
+        const data = await response.json();
+        
+        loader.style.display = "none";
+        if (data.length === 0) {
+            motorList.innerHTML = "<p style='text-align:center'>Belum ada data motor.</p>";
+        } else {
+            renderCards(data);
+        }
+    } catch (error) {
+        loader.innerText = "Error: Gagal memuat data.";
+        console.error(error);
+    }
+}
+
+// Fungsi mengirim data ke Spreadsheet
+async function submitData() {
+    const btn = document.getElementById("submit-btn");
+    const payload = {
+        motor: document.getElementById("motor-name").value,
+        lastService: document.getElementById("last-service").value,
+        nextService: document.getElementById("next-service").value
+    };
+
+    btn.disabled = true;
+    btn.innerText = "Menyimpan...";
+
+    try {
+        // Mengirim data menggunakan POST
+        await fetch(SCRIPT_URL, {
+            method: "POST",
+            body: JSON.stringify(payload)
+        });
+
+        // Reset form dan refresh list
+        document.getElementById("service-form").reset();
+        fetchData(); 
+    } catch (error) {
+        alert("Gagal menyimpan data ke Spreadsheet.");
+    } finally {
+        btn.disabled = false;
+        btn.innerText = "Simpan ke Spreadsheet";
+    }
+}
+
+// Fungsi menampilkan data dalam bentuk kartu
+function renderCards(data) {
+    const container = document.getElementById("motor-list");
+    const today = new Date();
+    today.setHours(0,0,0,0); // Reset jam untuk perbandingan tanggal saja
+
+    data.forEach(item => {
+        // Nama key harus sama dengan normalisasi di Apps Script (lowercase & underscore)
+        const name = item.daftar_motor || "Motor Tanpa Nama";
+        const nextDate = item.rekomendasi_servis_berikutnya ? new Date(item.rekomendasi_servis_berikutnya) : null;
+        const lastDate = item.tanggal_servis_terakhir ? new Date(item.tanggal_servis_terakhir) : null;
+        
+        const isUrgent = nextDate && nextDate <= today;
+        
+        const card = document.createElement("div");
+        card.className = `card ${isUrgent ? 'urgent' : 'safe'}`;
+        
+        card.innerHTML = `
+            <h3>${name}</h3>
+            <p>Servis Terakhir: <b>${lastDate ? formatDate(lastDate) : '-'}</b></p>
+            <p>Jadwal Berikutnya: <b>${nextDate ? formatDate(nextDate) : '-'}</b></p>
+            <span class="status-badge">
+                ${isUrgent ? '⚠️ WAKTUNYA SERVIS' : '✅ KONDISI AMAN'}
+            </span>
+        `;
+        container.appendChild(card);
+    });
+}
+
+function formatDate(date) {
+    return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+}
