@@ -1,1 +1,45 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MotorCare - Pengingat Servis</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>MotorCare</h1>
+            <p id="current-date"></p>
+        </header>
+
+        <!-- Form Input -->
+        <section class="input-section">
+            <h3>Tambah Jadwal Baru</h3>
+            <form id="service-form">
+                <input type="text" id="motor-name" placeholder="Nama Motor (Contoh: Vario B 1234)" required>
+                <div class="date-inputs">
+                    <div>
+                        <label>Servis Terakhir</label>
+                        <input type="date" id="last-service" required>
+                    </div>
+                    <div>
+                        <label>Servis Berikutnya</label>
+                        <input type="date" id="next-service" required>
+                    </div>
+                </div>
+                <button type="submit" id="submit-btn">Simpan ke Spreadsheet</button>
+            </form>
+        </section>
+
+        <hr>
+
+        <!-- List Display -->
+        <div id="loading" class="loader">Memuat data...</div>
+        <div id="motor-list" class="grid-container"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
 
