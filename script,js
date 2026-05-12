@@ -1,5 +1,5 @@
 // GANTI DENGAN URL WEB APP DARI GOOGLE APPS SCRIPT ANDA
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzcTCQrwEJG2A3zy1ALJaPSY-7CX_1xAxLkaCF8dwpYioJEkSI42FIVw2AR5np3ts-sDA/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzAA3-RErRGIBaFZMFlbVDxc8YIDRMt3JswoG8K6oSAhufAvOWRF8CPERHF2LmIgPdxMg/exec";
 
 document.addEventListener("DOMContentLoaded", () => {
     // Tampilkan tanggal hari ini
